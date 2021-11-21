@@ -14,11 +14,11 @@ exports.getAllObj = (req, res) => {
 
 exports.createObj = (req, res) => {
     if(req.body.user_id){
-        const imgUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+        // const imgUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
         const article = new Article({
             title:   req.body.title,
             message: req.body.message,
-            image:   imgUrl,
+            image:   req.body.image,
             user_id: req.body.user_id
         });
         article.save((error) => {

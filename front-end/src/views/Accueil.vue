@@ -1,84 +1,83 @@
 <template>
-    <div class="mx-2 mt-5">
-        <div class="container bg_container">
-
-            <div class="row row-cols-2 align-items-center">
+    <div class="container bg_container_projet mt-5">
+        <div class="px-2 bg_container">
+            <!-- post message -->
+            <div  class="row row-cols-2 align-items-center">
                 <div class="col-2 d-flex justify-content-start icon_photo">
                     <i class="far fa-user-circle"></i>
                 </div>
                 <div class="col-10 textareaPublier">
-                    <textarea  name="textarea" id="textarea" placeholder="Ecrivez un commentaire"></textarea>
+                    <textarea v-model="sendComment.title"  name="textarea" id="textarea" placeholder="Ecrivez un commentaire"></textarea>
                 </div>
             </div>
-
             <div class="row align-items-center mt-3 mb-1">
                 <div class="col-1">
                     <label for="choose_file"><i class="fas fa-images"></i></label>
                     <input type="file" name="file" id="choose_file">
                 </div>
-                <div class="col d-flex justify-content-end publier"><button type="submit">Publier</button></div>
+                <div @click="getArticles()" class="col d-flex justify-content-end publier"><button type="submit" id="btn_sumit">Publier</button></div>
             </div>
         </div>
-        
-        <div class="mt-3">
-            <div class="container bg_container">
-
-                <div class="row align-items-center">
-                    <div class="col-2 pb-2 icon_photo">
-                        <i class="far fa-user-circle"></i>
-                    </div>
-                    <div class="col">
-                        <h2 class="fs-4">Amaral</h2>
-                    </div>
-                    <div class="col d-flex justify-content-end">
-                        <i class="fas fa-trash"></i>
-                    </div>
+        <div><h5 class="p-3">Publication récentes</h5></div>
+        <!-- message publiéé -->
+        <div class="px-2 bg_container mt-2" v-for="article in articles" v-bind:key="article">
+            <div class="row align-items-center">
+                <div class="col-2 pb-2 icon_photo">
+                    <i class="far fa-user-circle"></i>
                 </div>
-
-                <div class="row">
-                    <div class="col">
-                        <h3 class="publication">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae, quidem? Veniam dolorum expedita autem reprehenderit ipsum ratione, dolor asperiores dolore impedit cumque accusantium quis accusamus nihil dicta in rerum fugiat!Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae, quidem? Veniam dolorum expedita autem reprehenderit ipsum ratione, dolor asperiores dolore impedit cumque accusantium quis accusamus nihil dicta in rerum fugiat!</h3>
-                    </div>
+                <div class="col">
+                    <h2 class="fs-4">Amaral</h2>
                 </div>
-
-                <div class="row align-items-center mt-3 mb-1">
-                    <button class="col-3 likes"><i class="fas fa-thumbs-up likesIcon"></i>J'aime</button>
-                    <button class="col-2 d-flex commentaire justify-content-start"><i class="fas fa-comment-alt mt-1" id="commentaire"></i>Commenter</button>
+                <div class="col d-flex justify-content-end">
+                    <i class="fas fa-trash"></i>
                 </div>
-                
             </div>
+            <div class="row">
+                <div class="col">
+                    <p class="publication px-3">{{ article }}</p>
+                </div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center mt-3 mb-1">
+                <div><button class="likesAnCommentaire"><i class="fas fa-thumbs-up" id="likesAnCommentaireIcon"></i>J'aime</button></div>
+                <div class="px-2"><button class="likesAnCommentaire"><i class="fas fa-comment-alt" id="likesAnCommentaireIcon"></i>Commenter</button></div>
+            </div>
+            <div><input v-on:keyup.enter="getArticles()" v-model="sendComment.message" type="text" id="commentInput" placeholder="Écrivez un commentaire"><button @click="getArticles()" class="border-0 bg-transparent"><i class="fas fa-paper-plane" id="likesAnCommentaireIcon"></i></button></div>
         </div>
-
     </div>
 </template>
 <script>
 export default {
-    // !-- <div v-for="article in articles" class="mx-2 mt-3"> -->
-    // name: 'Acceuil',
-    // data() {
-    //     return {
-    //         articles: []
-    //     }
-    // },
-    // methods: {
-    //     getArticles() {
-    //         fetch("http://localhost:3000/api/article", {
-    //             method: 'GET',
-    //             headers: {
-    //                 'Authorization': 'basic '+ localStorage.getItem('token'),
-    //             }
-    //         })
-    //         .then(res => {
-    //             console.log(res)
-    //             if(res.ok){
-    //                 return res.json();
-    //             }
-    //         })
-    //         .then(res => {
-    //             this.articles = res;
-    //         })
-    //     }
-    // },
+    name: 'Acceuil',
+    data() {
+        return {
+            sendComment: {
+                title: "",
+                message: "",
+                image: "",
+                user_id:  localStorage.getItem('userId')
+            },
+            articles: [],
+            
+        }
+    },
+    methods: {
+        getArticles() {
+            fetch("http://localhost:3000/api/article", {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'basic '+ localStorage.getItem('token'),
+                    'content-type': 'application/json', 
+                },
+                body: JSON.stringify(this.sendComment)
+            })
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+                this.articles.push(this.sendComment.title),
+                this.sendComment.title = ""
+            })
+        }
+    },
 }
 </script>
 
@@ -88,10 +87,16 @@ body {
     color: #d8d8d8;
     font-family: 'Roboto';
 }
-.bg_container {
-    background-color: #2d2f33;
-    border-radius: 10px;
+.bg_container_projet  {
+    background: linear-gradient(to left, #ff105f, #27428b);
     max-width: 500px;
+    padding: .5rem .5rem .5rem .5rem;
+    border-radius: 10px;
+}
+.bg_container {
+    background: -webkit-linear-gradient(left, #2f1533, #6d1c42);
+    border-radius: 10px;
+    /* max-width: 500px; */
     padding-top: 8px;
     padding-bottom: 10px;
 }
@@ -103,7 +108,7 @@ body {
 #textarea{
     padding: 8px;
     width: 100%;
-    background-color: #4A4A4A;
+    background: linear-gradient(to left, #880c35, #371050);
     border-radius: 15px;
     outline: none;
     resize: none;
@@ -113,14 +118,31 @@ body {
 }
 
 #textarea::placeholder {
-    color: #a7a5a5;
+    color: #dbdbdb;
     font-size: 13px;
+}
+#commentInput{
+    width: 70%;
+    background: linear-gradient(to left, #af1247, #470d6b);
+    border-radius: 5px;
+    outline: none;
+    color: #d8d8d8;
+    padding-left: 15px;
+    border: 0.5mm ridge #4A4A4A;
+}
+#commentInput::placeholder {
+    color: #dbdbdb;
+    font-size: 12px;
 }
 input[type="file"] {
     display: none;
 }
 label[for="choose_file"] {
-    color: #848ec4;
+    background: linear-gradient(to right, #ff105f, #ffad06) ;
+     background-clip: text;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 1.5rem;
     padding: 8px;
     transform: scale(1);
@@ -130,21 +152,18 @@ label[for="choose_file"]:hover {
     transform: scale(1.1);
 }
 
-button[type="submit"] {
-    /* margin: 10px 0; */
+#btn_sumit {
+    margin: 10px 0;
     padding: 4px 12px;
-    border: 1px #636a92 solid;
-    border-radius: 10px;
-    background: #454a64;
-    color: #fff;
+    border: none;
+    border-radius: 30px;
     font-size: 1rem;
     transform: scale(1);
     transition: 0.2s;
+    background: linear-gradient(to right, #ff105f, #ffad06);
 }
 
-button[type="submit"]:hover {
-    background-color: transparent;
-    opacity: .8;
+#btn_sumit:hover {
     transform: scale(1.1);
 }
 
@@ -153,39 +172,31 @@ button[type="submit"]:hover {
     font-size: 3rem;
 }
 .publication {
+    display: flex;
+    word-wrap: wrap;
     font-size: 14px;
+    text-align: justify;
 }
-.likes {
+.likesAnCommentaire {
     color: #d8d8d8;
     font-size: 14px;
     border: none;
     background: none;
     transform: scale(1);
     transition: 0.2s;
+    
 }
-.likesIcon {
-    color: #848ec4;
+#likesAnCommentaireIcon {
+    background: linear-gradient(to right, #ff105f, #ffad06) ;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 1.2rem;
     padding-right: 10px; 
+    
 }
-.likes:hover {
+.likesAnCommentaire:hover {
     transform: scale(1.1);
-}
-.commentaire {
-    color: #d8d8d8;
-    font-size: 14px;
-    background: none;
-    border: none;
-    transform: scale(1);
-    transition: 0.2s;
-}
-.commentaire:hover {
-    transform: scale(1.1);
-}
-#commentaire {
-    font-size: 1.2rem;
-    padding-right: 10px; 
-    color: #848ec4;
 }
 </style>
-// 1C1E21

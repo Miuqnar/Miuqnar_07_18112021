@@ -8,15 +8,10 @@ const routes = [
     // component: Inscription
     component: () => import('../views/Connexion.vue')
   },
-  {
-    path: '/inscription',
-    name: 'Inscription',
-    component: () => import('../views/Inscription.vue')
-  },
   // {
-  //   path: '/connect',
-  //   name: 'Connexion',
-  //   component: () => import('../views/connect.vue')
+  //   path: '/inscription',
+  //   name: 'Inscription',
+  //   component: () => import('../views/Inscription.vue')
   // },
   {
     path: '/accueil',

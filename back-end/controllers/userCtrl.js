@@ -5,7 +5,6 @@ const fs        = require('fs');
 const saltRound = 10
 require('dotenv').config();
 
-
 exports.signup = (req, res) => {
     bcrypt.hash(req.body.password, saltRound)
     .then(hash => {

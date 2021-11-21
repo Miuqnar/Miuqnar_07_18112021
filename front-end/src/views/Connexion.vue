@@ -1,61 +1,63 @@
 <template>
-    <div class="mx-2">
-        <div class="container wrap_container">
-            <div class="wrap_items overflow-hidden w-100">
-                <div class="slide-controls">
-                    <input type="radio" name="slider" id="login" @click="diplayLogin(true)" checked >
-                    <input type="radio" name="slider" id="signup" @click="diplayLogin(false)">
-                    <label for="login" class="slide slide01 login ">Login</label>
-                    <label for="signup" class="slide signup">Register</label>
-                    <div class="slide-tab"></div>
-                </div>
-                <div class="form_container">
-                    <form @submit.prevent="loginAccount()" method="POST" v-if="isLoginAndSignup.isLogin">
-                        <div class="text-center">
-                            <h3 class="fs-5 p-4">Se connecter</h3>
-                        </div>
-                        <div class="field">
-                            <label for="email"></label>
-                            <input v-model="login.email" type="email" class="input-file" id="email" placeholder="Adresse email" required>
-                            <small></small>
-                        </div>
-                        <div class="field">
-                            <label for="password"></label>
-                            <input  v-model="login.password" type="password" class="input-file" id="password" placeholder="Password" required>
-                            <small></small>
-                        </div>
-                        <div class="submit_fiel p-5">
-                            <button type="submit" class="btn_submit">Se connecter</button>
-                        </div>
-                    </form>
-                    <form @submit.prevent="createAccount()" method="POST" v-if="!isLoginAndSignup.isLogin">
-                        <div class="text-center">
-                            <h3 class="fs-5 p-3">Créer une compte</h3>
-                        </div>
-                        <div class="field">
-                            <label for="pseudo"></label>
-                            <input v-model="signup.pseudo" type="pseudo" class="input-file" id="pseudo" placeholder="Nom complet" required>
-                            <small></small>
-                        </div>
-                        <div class="field">
-                            <label for="email"></label>
-                            <input  v-model="signup.email" type="email" class="input-file" id="email" placeholder="Adresse email" required>
-                            <small></small>
-                        </div>
-                        <div class="field">
-                            <label for="password"></label>
-                            <input v-model="signup.password" type="password" class="input-file" id="password" placeholder="Password" required>
-                            <small></small>
-                        </div>
-                        <div class="field">
-                            <label for="confirmPassword"></label>
-                            <input v-model="signup.confirmPassword" type="password" class="input-file" id="confirmPassword" placeholder="Confirm password" required>
-                            <small></small>
-                        </div>
-                        <div class="submit_fiel pt-4 pb-3">
-                            <button type="submit" class="btn_submit">Se connecter</button>
-                        </div>
-                    </form>
+    <div class="wrap_project">
+        <div class="mx-2">
+            <div class="container wrap_container">
+                <div class="wrap_items overflow-hidden w-100">
+                    <div class="slide-controls">
+                        <input type="radio" name="slider" id="login" @click="diplayLogin(true)" checked >
+                        <input type="radio" name="slider" id="signup" @click="diplayLogin(false)">
+                        <label for="login" class="slide slide01 login ">Login</label>
+                        <label for="signup" class="slide signup">Register</label>
+                        <div class="slide-tab"></div>
+                    </div>
+                    <div class="form_container">
+                        <form @submit.prevent="loginAccount()" method="POST" v-if="isLoginAndSignup.isLogin">
+                            <div class="text-center">
+                                <h3 class="fs-5 p-4">Se connecter</h3>
+                            </div>
+                            <div class="field">
+                                <label for="email"></label>
+                                <input v-model="login.email" type="email" class="input-file" id="email" placeholder="Adresse email" required>
+                                <small></small>
+                            </div>
+                            <div class="field">
+                                <label for="password"></label>
+                                <input  v-model="login.password" type="password" class="input-file" id="password" placeholder="Password" required>
+                                <small></small>
+                            </div>
+                            <div class="submit_fiel p-5">
+                                <button type="submit" class="btn_submit">Se connecter</button>
+                            </div>
+                        </form>
+                        <form @submit.prevent="createAccount()" method="POST" v-if="!isLoginAndSignup.isLogin">
+                            <div class="text-center">
+                                <h3 class="fs-5 p-3">Créer une compte</h3>
+                            </div>
+                            <div class="field">
+                                <label for="pseudo"></label>
+                                <input v-model="signup.pseudo" type="pseudo" class="input-file" id="pseudo" placeholder="Nom complet" required>
+                                <small></small>
+                            </div>
+                            <div class="field">
+                                <label for="email"></label>
+                                <input  v-model="signup.email" type="email" class="input-file" id="email" placeholder="Adresse email" required>
+                                <small></small>
+                            </div>
+                            <div class="field">
+                                <label for="password"></label>
+                                <input v-model="signup.password" type="password" class="input-file" id="password" placeholder="Password" required>
+                                <small></small>
+                            </div>
+                            <div class="field">
+                                <label for="confirmPassword"></label>
+                                <input v-model="signup.confirmPassword" type="password" class="input-file" id="confirmPassword" placeholder="Confirm password" required>
+                                <small></small>
+                            </div>
+                            <div class="submit_fiel pt-4 pb-3">
+                                <button type="submit" class="btn_submit">Se connecter</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,7 +72,7 @@ export default {
                 pseudo: '', 
                 email: '', 
                 password: '',
-                confirmPassword: ''
+                confirmPassword: '',
             },
             login: {
                 email: '', 
@@ -88,7 +90,7 @@ export default {
         },
         createAccount() {
             if(this.signup.password !=this.signup.confirmPassword){
-                this.errors = 'Le mot de passe doit être identique';
+                console.log('Le mot de passe doit être identique');
                 return false
             }
             if (this.signup.pseudo == "") {
@@ -121,13 +123,11 @@ export default {
                     return true
                 }
             }
-            let token = "";
             fetch("http://localhost:3000/api/auth/signup", {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json', 
-                    'Accept': 'application/json',
-                    'Authorization': `basic${token}`
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(this.signup)
             })
@@ -137,43 +137,35 @@ export default {
                     return res.json();
                 }
             })
-            .then(res => console.log(res))
+            .then(res => {
+                localStorage.setItem("userId", res.userId)
+                localStorage.setItem("token", res.token)
+                alert('Bienvenue sur Groupomania, Connectez-vous dès maintenant')
+                this.$router.push("/accueil")
+            })
         },
         
         loginAccount() {
-            
-
-            let token = "";
             fetch("http://localhost:3000/api/auth/login", {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json', 
                     'Accept': 'application/json',
-                    'Authorization': `basic${token}`
                 },
                 body: JSON.stringify(this.login)
             })
+            .then(res => res.json())
             .then(res => {
                 console.log(res)
-                if(res.ok){
-                    return res.json();
+                if(res.userId && res.token) {
+                    localStorage.setItem("userId", res.userId)
+                    localStorage.setItem("token", res.token)
+                    console.log(localStorage);
+                    // window.location.href = "/#/accueil";
+                    this.$router.push("/accueil")
+                }else {
+                    alert("mot de passe ou user incorrect");
                 }
-            })
-            .then(res => {
-                if(localStorage.setItem("token", JSON.stringify(token))) {
-                    return res
-                }
-                 if (this.login.email == "") {
-                console.log("Veuillez entrer votre email");
-                return true
-                }else if(this.login.email == "" && this.login.password == ""){
-                    console.log("email corret");
-                    // return true
-                }else{
-                    window.location.href = "http://localhost:8080/#/accueil";
-                    console.log('email incorrect')
-                }
-               
             })
         }
     }
@@ -181,9 +173,10 @@ export default {
 </script>
 <style>
 
-body {
+.wrap_project {
+    padding: 8rem 0 8rem;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     color: #d8d8d8;
     font-family: 'Roboto';
     background: url('../assets/images/plage.jpg') no-repeat center;
@@ -191,15 +184,14 @@ body {
 .wrap_container {
     width: 100%;
     height: 480px;
-    margin-top: 8rem;
+    /* margin-top: 8rem; */
     /* overflow: hidden; */
     max-width: 390px;
     padding: 0 30px;
     border-radius: 15px;
-    background-color: #2d2f33; 
+    background: -webkit-linear-gradient(left, #2f1533, #411027);
        
 }
-
 .form_container {
     width: 200%;
     display: flex;
@@ -210,8 +202,6 @@ body {
 .wrap_container .slide-controls {
     position: relative;
     display: flex;
-    /* width: 100%; */
-    /* margin: 30px 0 10px 0; */
     border-radius: 30px;
     overflow: hidden;
     width: 200px;
@@ -240,7 +230,6 @@ body {
     width: 50%;
     left: 0;
     z-index: 0;
-    /* border-radius: 5px; */
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     background: linear-gradient(to right, #ff105f, #ffad06);
 }
@@ -265,7 +254,6 @@ input[type="radio"]{
 .field {
     height: 50px;
     width: 100%;
-    /* margin-top: 20px; */
 }
 
 .input-file {
