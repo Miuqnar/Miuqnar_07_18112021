@@ -5,14 +5,16 @@ const fs        = require('fs');
 const saltRound = 10
 require('dotenv').config();
 
+
+
 exports.signup = (req, res) => {
     bcrypt.hash(req.body.password, saltRound)
     .then(hash => {
         const user = new User({
-            pseudo:   req.body.pseudo,
-            email:    req.body.email,
-            password: hash,
-            photo:    req.body.photo 
+            user_name: req.body.user_name,
+            email:     req.body.email,
+            password:  hash,
+            photo:     req.body.photo 
         })
         user.save((error) => {
             if(error){
@@ -25,7 +27,7 @@ exports.signup = (req, res) => {
     .catch(error => res.status(400).json({ error }))
 };
 
-exports.login = (req,res) => {
+exports.login = (req,res) => { 
     User.findBy({ email: req.body.email }, (error, data) => {
         console.log(data);
         if(data.length == 0){
@@ -41,12 +43,12 @@ exports.login = (req,res) => {
             //si elle a trouvé vrais alors un renvoi un status 200
             res.status(200).json({ 
                 userId: user.id,
-                token: jwt.sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '24h'})
+                token: jwt.sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '24h'}),
+                // userName: user.user_name,
             })
         })
        .catch(error => res.status(500).json({ error }));
-    })
-    
+    })   
 }
 
 
@@ -62,12 +64,11 @@ exports.getAll = (req, res) => {
 };
 
 exports.createObj = (req, res) => {
-    const imgUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
     const user = new User({
-        pseudo:   req.body.pseudo,
-        email:    req.body.email,
-        password: req.body.password,
-        photo:    imgUrl
+        user_name: req.body.user_name,
+        email:     req.body.email,
+        password:  req.body.password,
+        photo:     ( req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null ),
     });
     console.log(user);
     user.save((error) => {
@@ -94,15 +95,16 @@ exports.getOne = (req, res) => {
 };
 
 exports.updateObj = (req, res) => {
+
     const imgUrl = "";
     if(req.file){
         imgUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
     }
     const user = new User({
-        pseudo:   req.body.pseudo,
-        email:    req.body.email,
-        password: req.body.password,
-        photo:    imgUrl
+        user_name: req.body.user_name,
+        email:     req.body.email,
+        password:  req.body.password,
+        photo:     imgUrl 
     });
     user.updateOne(req.params.id, (error => {
         if(error){
@@ -111,20 +113,23 @@ exports.updateObj = (req, res) => {
             res.status(200).json({ message: 'Objet modifié'})
         }
     }))
+   
 };
 
 exports.deleteObj = (req, res) => {
-    const user = req.params.id;
-    const filename = user.photo.split('/images/')[1];
-    fs.unlink(`images/${filename}`, () => {
-        User.deleteOne(req.params.id, (error) => {
-    
-            if(error){
-                res.status(400).json({ error })
-            }else{
-                res.status(200).json({ message: 'Objet supprimé'})
-            }
-        })
+    User.deleteOne(req.params.id, (error) => {
+        if(error){
+            res.status(400).json({ error })
+        }else{
+            res.status(200).json({ message: 'Objet supprimé'})
+        }
     })
+
     
 }
+
+
+
+
+
+

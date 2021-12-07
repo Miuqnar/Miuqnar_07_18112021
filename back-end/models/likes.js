@@ -3,7 +3,7 @@ const connection = require('../config/configDB');
 class LikeAndDislike {
     constructor(obj = null){
         this.likes      = 0;
-        this.dislikes    = 0;
+        this.dislikes   = 0;
         this.user_id    = null;
         this.article_id = null;
         if(obj != null){
@@ -26,9 +26,17 @@ class LikeAndDislike {
         const sql = "SELECT * FROM likeAndDislike  WHERE id = ?";
         connection.query(sql, [id], callback);
     }
-    static findBy(where, callback){
-        const sql = "SELECT * FROM likeAndDislike WHERE ?"
-        connection.query(sql, [where], callback);
+    static findBy(article_id, where = 1){
+        const sql = "SELECT * FROM LikeAndDislike WHERE article_id = ? and ?";
+        return  new Promise((resolve, reject) => {
+            connection.query(sql, [article_id, where], function(error, data){
+                if(error){
+                    reject(error)
+                }else{
+                    resolve(data)
+                }
+            });
+        })
     }
 
     updateOne(id, callback){
@@ -39,6 +47,7 @@ class LikeAndDislike {
         const sql = "DELETE FROM likeAndDislike WHERE id = ?";
         connection.query(sql, [id], callback)
     }
+    
 };
 
 module.exports = LikeAndDislike;

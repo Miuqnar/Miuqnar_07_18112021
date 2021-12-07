@@ -17,16 +17,14 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/article', articleRoutes);
 app.use('/api/commentaire', commentaireRoutes);
 app.use('/api/likeanddislike', likeAndDislike);
-app.use('/api/auth', userRoutes);
-
-
+app.use('/api/auth', userRoutes); 
 
 
 module.exports = app;

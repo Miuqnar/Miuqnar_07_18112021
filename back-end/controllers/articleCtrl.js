@@ -1,41 +1,72 @@
-const Article = require('../models/article');
-const fs      = require('fs');
+const Article        = require('../models/article');
+const Commentaire    = require('../models/commentaire');
+const LikeAndDislike = require('../models/likes');
+const User           = require('../models/User')
+const fs             = require('fs');
 
 exports.getAllObj = (req, res) => {
-    Article.findAll((error, data) => {
+    Article.findAll(async (error, data) => {
         if(error){
             console.log("error", error);
             res.status(500).json({ error });
         }else{
+            for(let i = 0; i < data.length; i++) {
+                let commentArticle = [];
+                let like = [];
+                let dislike = [];
+                commentArticle = await Commentaire.findBy({ article_id: data[i].id}).catch(e => {console.log(e)})
+                for(c of commentArticle){
+                    await User.findOne(c.user_id, (error, user) => {
+                        if(error){
+                            c.user = {}
+                        }else{
+                            c.user = user[0]
+                        }
+                    })
+                }
+                like = await LikeAndDislike.findBy(data[i].id, { likes: 1}).catch(e => {console.log(e)})
+                dislike = await LikeAndDislike.findBy(data[i].id, { dislikes: 1}).catch(e => {console.log(e)})
+
+                await User.findOne(data[i].user_id, (error, user) => {
+                    if(error){
+                        data[i].user = {}
+                    }else{
+                        data[i].user = user[0]
+                    }
+                })
+
+                data[i].comments = commentArticle;
+                data[i].newComment = "";
+                data[i].likes = like;
+                data[i].dislikes = dislike;
+
+            };
             res.status(200).json(data)
         }
-    })
+    }) 
 };
+
 
 exports.createObj = (req, res) => {
     if(req.body.user_id){
-        // const imgUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
         const article = new Article({
-            title:   req.body.title,
-            message: req.body.message,
-            image:   req.body.image,
-            user_id: req.body.user_id
+            message:       req.body.message,
+            image:         ( req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null ),
+            user_id:       req.body.user_id
         });
-        article.save((error) => {
-            if(error){
-                console.log(error)
-                res.status(500).json({ error })
-            }else{
-                res.status(201).json({ message: "Objet crée"})
-            }
-        })
+        article.save()
+        .then(() => res.status(201).json({ message: "Objet crée" }))
+        .catch((error) => res.status(400).json({ error }));
+
     }else{
         res.status(400).json({ error: "ID d'utilisateur obligatoire" });
     }
+    
 };
 
 exports.getOneObj = (req, res) => {
-    Article.findOne(req.params.id,(error, data) => {
+    const article = (req.params.id)
+    Article.findOne(article, (error, data) => {
         if(error){
             res.status(500).json({ error })
             console.log(error)
@@ -50,16 +81,16 @@ exports.getOneObj = (req, res) => {
     });
 };
 
+
 exports.updateObj = (req, res) => {
-    const imgUrl = "";
-    if(req.file){
-        imgUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-    }
+    // const imgUrl = "";
+    // if(req.file){
+    //     imgUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+    // }
     const article = new Article({
-        title:   req.body.title,
-        message: req.body.message,
-        image:   imgUrl,
-        user_id: req.body.user_id
+        message:       req.body.message,
+        image:         imgUrl,
+        user_id:       req.body.user_id
     });
     article.update(req.params.id, (error => {
         if(error){
@@ -70,31 +101,13 @@ exports.updateObj = (req, res) => {
     }))
 };
 
-// exports.updateObj = (req, res) => {
-//     const updateObj = req.file ? 
-    
-//     {...JSON.parse(req.body), image: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`} : { ...req.body };
-//     const article = new Article(req.body);
-//     article.updateOne({ id: req.params.id }, {...updateObj, id: req.params.id }, (error) => {
-//         if(error){
-//             res.status(400).json({ error })
-//         }else{
-//             res.status(200).json({ message: 'Objet modifié'})
-//         }
-        
-//     })
-// };
 
 exports.deteleObjt = (req, res) => {
-    const articleD = req.params.id;
-    const filename = articleD.image.split('/images/')[1];
-    fs.unlink(`images/${filename}`, () => {
-        Article.deleteOne(req.params.id, (error) => {
-            if(error){
-                res.status(400).json({ error })
-            }else{
-                res.status(200).json({ message: "Objet supprimé"})
-            }
-        })
+    Article.deleteOne(req.params.id, (error) => {
+        if(error){
+            res.status(400).json({ error })
+        }else{
+            res.status(200).json({ message: "Objet supprimé"})
+        }
     })
 };

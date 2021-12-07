@@ -6,8 +6,8 @@
                     <div class="slide-controls">
                         <input type="radio" name="slider" id="login" @click="diplayLogin(true)" checked >
                         <input type="radio" name="slider" id="signup" @click="diplayLogin(false)">
-                        <label for="login" class="slide slide01 login ">Login</label>
-                        <label for="signup" class="slide signup">Register</label>
+                        <label for="login" class="slide slide01 login ">connexion</label>
+                        <label for="signup" class="slide signup">S'inscrire</label>
                         <div class="slide-tab"></div>
                     </div>
                     <div class="form_container">
@@ -31,11 +31,11 @@
                         </form>
                         <form @submit.prevent="createAccount()" method="POST" v-if="!isLoginAndSignup.isLogin">
                             <div class="text-center">
-                                <h3 class="fs-5 p-3">Créer une compte</h3>
+                                <h3 class="fs-5 p-3">Créer un compte</h3>
                             </div>
                             <div class="field">
-                                <label for="pseudo"></label>
-                                <input v-model="signup.pseudo" type="pseudo" class="input-file" id="pseudo" placeholder="Nom complet" required>
+                                <label for="user_name"></label>
+                                <input v-model="signup.user_name" type="user_name" class="input-file" id="user_name" placeholder="Ajoutez un Pseudo" required>
                                 <small></small>
                             </div>
                             <div class="field">
@@ -54,7 +54,7 @@
                                 <small></small>
                             </div>
                             <div class="submit_fiel pt-4 pb-3">
-                                <button type="submit" class="btn_submit">Se connecter</button>
+                                <button type="submit" class="btn_submit">S'inscrire</button>
                             </div>
                         </form>
                     </div>
@@ -69,7 +69,7 @@ export default {
     data() {
         return {
             signup: {
-                pseudo: '', 
+                user_name: '', 
                 email: '', 
                 password: '',
                 confirmPassword: '',
@@ -93,12 +93,13 @@ export default {
                 console.log('Le mot de passe doit être identique');
                 return false
             }
-            if (this.signup.pseudo == "") {
+            if (this.signup.user_name == "") {
                 console.log("Veuillez entrer votre nom");
                 return true
-            } else {
-                let pseudoRegex = new RegExp('^[a-zA-Z]+$', 'g')
-                if (pseudoRegex.test(this.signup.pseudo) === false) {
+            }else {
+                //eslint-disable-next-line
+                let user_nameRegex = new RegExp('^[a-zA-Z \s]+$', 'g')
+                if (user_nameRegex.test(this.signup.user_name) === false) {
                 console.log("Le nom complet doit comporter que des lettres uniquement");
                     return true
                 }
@@ -106,7 +107,7 @@ export default {
             if (this.signup.email == "") {
                 console.log("Veuillez entrer votre email");
                 return true
-            } else {
+            }else {
                 let emailRegex = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$', 'g')
                 if (emailRegex.test(this.signup.email) === false) {
                 console.log("Veuillez entrer un email valide");
@@ -116,7 +117,7 @@ export default {
             if (this.signup.password == "") {
                 console.log("Veuillez entrer votre mot de passe");
                 return true
-            } else {
+            }else {
                 let passwordRegex = new RegExp('^[a-zA-Z 0-9]+$', 'g')
                 if (passwordRegex.test(this.signup.password) === false) {
                 console.log("Veuillez entrer un mot de passe valide");
@@ -138,10 +139,37 @@ export default {
                 }
             })
             .then(res => {
-                localStorage.setItem("userId", res.userId)
-                localStorage.setItem("token", res.token)
+                localStorage.setItem("userId", res.userId);
+                localStorage.setItem("token", res.token);
+                localStorage.setItem("userName", res.user_name);
                 alert('Bienvenue sur Groupomania, Connectez-vous dès maintenant')
-                this.$router.push("/accueil")
+                
+                //// login ////
+                fetch("http://localhost:3000/api/auth/login", {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json', 
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(this.signup)
+                })
+                .then(res => res.json())
+                .then(res => {
+                    console.log(res)
+                    if(res.userId && res.token) {
+                        localStorage.setItem("userId", res.userId);
+                        localStorage.setItem("token", res.token);
+                        localStorage.setItem("userName", res.userName);
+                        console.log(localStorage);
+                        // window.location.href = "/#/accueil";
+                        this.$router.replace("/accueil")
+                    }else {
+                        alert("mot de passe ou user incorrect");
+                        this.login = ""
+                    }
+                })
+                // this.$router.reload("/accueil")
+                // window.location.reload()
             })
         },
         
@@ -158,13 +186,16 @@ export default {
             .then(res => {
                 console.log(res)
                 if(res.userId && res.token) {
-                    localStorage.setItem("userId", res.userId)
-                    localStorage.setItem("token", res.token)
+                    localStorage.setItem("userId", res.userId);
+                    localStorage.setItem("token", res.token);
+                    localStorage.setItem("userName", res.userName);
                     console.log(localStorage);
                     // window.location.href = "/#/accueil";
-                    this.$router.push("/accueil")
+                    this.$router.replace("/accueil")
                 }else {
+                    location.reload()
                     alert("mot de passe ou user incorrect");
+                    this.login = ""
                 }
             })
         }

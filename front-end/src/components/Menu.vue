@@ -1,23 +1,19 @@
 <template >
-    <div class="container-fluid menu_bar">
+    <div class="container-fluid menu_bar" >
         <div class="container">
             <div class="row row-cols-2">
                 <div class=" logo">
                     <img class="col-6" src="../assets/logo/groupomania02.png" alt="groupomania social NetWork">
                 </div>
-                <!-- <div class="col icon_home">
-                   <i class="fas fa-home"></i>
-                </div> -->
                 <div class="col-6 d-flex justify-content-end">
                     <div class="imgIcon" @click="menuToggle()">
                     <i class="far fa-user-circle"></i>
-                        <!-- <img class="" src="../assets/user/user02.png" alt=""> -->
                     </div>
-                    <div class="profil">
-                        <h3 class="text-white">Hello World</h3>
+                    <div class="profil" @mouseleave="menuToggle()">
                         <ul>
+                            <li @click="accueil()"><i class="fas fa-home"></i>Accueil</li>
                             <li @click="redirectMenu()" ><i class="fas fa-user-alt"></i>Mon Profile</li>
-                            <li><i class="fas fa-sign-out-alt"></i>Logout</li>
+                            <li @click="logout()" ><i class="fas fa-sign-out-alt"></i>Logout</li>
                         </ul>
                     </div>
                 </div>
@@ -31,14 +27,13 @@
             <router-link to="/article">Article</router-link>/
         </div> -->
     </div>
-    
 </template>
 <script>
 export default {
     name: "Menu",
     data() {
         return {
-            
+            menuDisplay: true,
         }
     },
     methods: {
@@ -46,16 +41,25 @@ export default {
           let toggleBar = document.querySelector('.profil');
           toggleBar.classList.toggle('active')
         },
+        accueil() {
+            this.$router.replace("/accueil")
+        },
         redirectMenu() {
             this.$router.push("/profil")
-        }
-    },
+        },
+        logout() {
+            this.$router.replace("/")
+            localStorage.clear()
+        },
+        
+    }
 }
 </script>
 <style>
 .menu_bar{
-    background: linear-gradient(to left, #8b0c36, #1d3e99);
-    line-height: 60px;
+    background: linear-gradient(to top, #8b0c36, #1d3e99);
+    /* background: linear-gradient(to top, #707070, #000000); */
+    line-height: 70px;
 } 
 .logo img{
     width: 12rem;
@@ -68,10 +72,11 @@ export default {
 }
 .profil{
     position: absolute;
-    top: 70px;
+    top: 80px;
     /* right: 60px; */
-    padding: 10px 20px;
-    background: linear-gradient(to right, #4b0b40, #590a7e);
+    padding: 8px 20px;
+    background: linear-gradient(to bottom, #8b0c36, #1d3e99);
+    /* background: -webkit-linear-gradient(top, #707070, #000000); */
     width: 200px;
     /* box-sizing: 0 5px 25px rgba(0,0,0,0.1); */
     border-radius: 15px;
@@ -79,10 +84,12 @@ export default {
     color: #d8d8d8;
     opacity: 0;
     z-index: 2;
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 .profil.active {
     visibility: visible;
     opacity: 1;
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 .profil::before {
     content: '';
@@ -91,26 +98,23 @@ export default {
     right: 28px;
     width: 20px;
     height: 20px;
-    background: linear-gradient(to right, #c729ad, #9419ce);
+    background:  #860b34;
+    /* background:  #6b6b6b; */
     transform: rotate(45deg);
     z-index: -10;
 }
-.profil h3{
-    width: 100%;
-    text-align: center;
-    font-size: 18px;
-    padding: 20px 0;
-    font-weight: 500;
-    color: #555;
-}
+
 .profil ul li {
     list-style: none;
-    padding: 10px 0;
-    border-top: 1px solid rgb(0, 0, 0);
+    padding: 8px 0;
+    border-bottom: 1px solid rgb(0, 0, 0);
     cursor: pointer;
-    /* display: flex;
-    align-content: center;
-    justify-content: center; */
+    transition: 0.2s;
+}
+.profil ul li:hover {
+    color: #ffad06;
+    /* border-radius: 15px; */
+    width: 100%;
 }
 .profil i:first-child  {
     max-width: 20px;

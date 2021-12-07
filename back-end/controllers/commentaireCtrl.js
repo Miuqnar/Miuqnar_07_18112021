@@ -11,11 +11,11 @@ exports.getAllObj = (req, res) => {
     })
 };
 
-exports.createObj = (req, res) => {
-    if(req.body.user_id && req.body.article_id){
+exports.createObj = (req, res) => { 
+    if(req.body.user_id && req.body.article_id ) { //
         const commentaire = new Commentaire({
-            message: req.body.message,
-            user_id: req.body.user_id,
+            newComment: req.body.newComment,
+            user_id:    req.body.user_id,
             article_id: req.body.article_id
         });
         commentaire.save((error) => {
@@ -31,6 +31,7 @@ exports.createObj = (req, res) => {
     }else if(!req.body.article_id){
         res.status(400).json({ error: "ID d'article obligatoire"});
     }
+    
     
 };
 

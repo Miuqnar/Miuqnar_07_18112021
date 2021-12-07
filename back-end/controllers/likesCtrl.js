@@ -19,7 +19,7 @@ exports.createLike = (req, res) => {
                 if(error){
                     res.status(500).json({ error })
                 }else{
-                    res.status(200).json({ message: "user liked"})
+                    res.status(201).json({ message: "user liked"})
                 }
             })
         }else{
@@ -30,45 +30,36 @@ exports.createLike = (req, res) => {
     }else if(!req.body.article_id){
         res.status(400).json({ error: "ID d'article obligatoire"}); 
     }
-    
 };
+
 
 exports.likeAndDislikeFind = (req, res) => {
-    LikeAndDislike.findBy(req.body, (error, resultat) => {
+    LikeAndDislike.findBy(req.body.article_id)
+    .then(resultat => {
         res.status(200).json(resultat)
-        if(error){
-            res.status(500).json({ error })
-        }else{
-            res.status(200).json(resultat)
-        }
+    })
+    .catch(error => {
+        res.status(500).json({ error })
     })
 };
-
+ 
 exports.likeAndDislikeUpdate = (req, res) => {
-    const updateLikesDislike = new LikeAndDislike(req.body)
-    if(req.body.likes || req.body.dislikes){
-        updateLikesDislike.updateOne(req.params.id, (error) => {
-            if(error){
-                res.status(400).json({ error })
-            }else{
-                res.status(200).json({ message: "modification effectué"})
-            }
-        })
-    }else{
-        res.status(400).json({ error })
-    }
-    // if(likes === -1 && dislikes === -1){
-    //     updateLikesDislike.updateOne(req.params.user_id, req.params.article_id,() => {
-    //         res.status(200).json({ message: "Neutral"})
+    // const updateLikesDislike = new LikeAndDislike(req.body)
+    // if(req.body.likes === 1 || req.body.dislikes === 1){
+    //     updateLikesDislike.updateOne(req.params.id, (error) => {
+    //         if(error){
+    //             res.status(400).json({ error })
+    //         }else{
+    //             res.status(200).json({ message: "modification effectué"})
+    //         }
     //     })
-    // }else{ 
-    //     res.status(400).json({ error: "error"});
+    // }else{
+    //     res.status(400).json({ error })
     // }
-
 };
 
+
 exports.detelelikes = (req, res) => {
-    
     LikeAndDislike.deleteOne(req.params.id, (error) => {
         if(error){
             res.status(400).json({ error })

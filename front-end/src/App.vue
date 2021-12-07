@@ -1,19 +1,13 @@
 <template>
-  <Menu/>
-  <router-view/>
-  
+  <div>
+    <router-view/>
+  </div>
 </template>
 
 <script>
-import Menu from './components/Menu.vue';
-
-export default {
-  components: {
-    Menu
-  }
-}
+// export default {
+// }
 </script>
 
 <style >
-
 </style>

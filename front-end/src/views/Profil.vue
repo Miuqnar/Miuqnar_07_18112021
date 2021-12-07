@@ -1,50 +1,186 @@
 <template>
-    <div class="mx-2">
-        <div class="container wrap_containerProfil">
-            <div class="">
-                <div class="iconImage row row-cols-2 d-flex align-items-center">
-                    <i class="far fa-user-circle col-3"></i>
-                    <h3 class="col-2">Nom</h3>
-                </div>
-                <div class="form_container">
-                    <form action="" class="form_items_input">
-                        <!-- <div><input type="text"  placeholder="First name" aria-label="First name"></div> -->
-                        <div><input type="password"  placeholder="modfier le mot de passe"></div>
-                        <div><input type="password2"  placeholder="nouveau mot de passe"></div>
-                    </form>
+  <div>
+      <Menu/>
+        <div class="bgBody">
+            <div class="mx-2">
+                <div class="container wrap_containerProfil">
+                    <div>
+                        <div class="iconImage">
+                            <div class="">
+                                <label for="choose_file_profil"><i class="far fa-user-circle " :src="account.photo"></i></label>
+                                <input @change="selectFile( $event )" type="file" ref="file" id="choose_file_profil">
+                            </div>
+                            <div class=" d-flex justify-content-center">
+                                <!-- <button type="submit" id="btn_sumitProfil">{{ publish }}</button> -->
+                            </div>
+                        </div>
+                        <div class="px-4 pt-4  infUser">
+                            <div class="pb-2">
+                                <span><span class="text-warning">Pseudo</span>: {{ account.user_name }}</span>
+                            </div>
+                            <div>
+                                <span><span class="text-warning">Email</span>: {{ account.email }}</span>
+                            </div>
+                        </div>
+                        <div class="form_container">
+                            <form action="" class="form_items_input">
+                                <div><input v-model="account.password" type="password"  placeholder="modifier le mot de passe"></div>
+                                <!-- <div>
+                                    <div @click="modifyProfil()" class="btn_compte"><button>{{ accountButton.enregistrer }}</button></div>
+                                    <div @click="deleteOneUser()" class="btn_compte"><button>{{ accountButton.desativer }}</button></div>
+                                </div> -->
+                            </form>
+                        </div>
+                        <div class="pb-4">
+                            <div @click="modifyProfil()" type="submit" class="btn_compte"><button>{{ accountButton.enregistrer }}</button></div>
+                            <div @click="deleteOneUser()" class="btn_compte"><button>{{ accountButton.desativer }}</button></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+  </div>
 </template>
 <script>
+// import "./Connexion.vue"
+import Menu from '../components/Menu.vue';
 export default {
-    
+    name: "Profil",
+    components: {
+        Menu
+    },
+    data() {
+        return {
+            publish: 'Modifier la photo',
+             account: {
+                user_name: "",
+                email: "",
+                password: "",
+                photo: "",
+                userId: localStorage.getItem("userId"),
+            },
+            accountButton: {
+                enregistrer: "Enregistrer",
+                desativer: "Desativer le compte",
+            }
+        }
+    },
+    mounted() {
+        this.getUser()
+    },
+    methods: {
+        selectFile( event ){
+            this.account.photo = event.target.files[0];
+        },
+        
+        modifyProfil(){
+            const formData = new FormData()
+            // formData.append('password', this.account.password)
+            formData.append('photo', this.account.photo)
+
+            // console.log('test password', formData.get("password"))
+            console.log('test photo', formData.get("photo"))
+
+            fetch(`http://localhost:3000/api/auth/`, { //${ this.account.userId}
+                method: 'POST',
+                headers: {
+                    'Authorization': 'basic '+ localStorage.getItem('token'),
+                    'Accept': 'application/json',
+                },
+                body: formData 
+            })
+            .then(res => res.json())
+            // .then(data => {
+            //    this.account.password = data.password;
+            // console.log(data)
+            // })
+            .catch(error => console.log(error))
+        },
+
+        getUser(){
+            fetch(`http://localhost:3000/api/auth/${ this.account.userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'basic '+ localStorage.getItem('token'),
+                },
+            })
+            .then(res => res.json())
+            .then(data => {
+               this.account.user_name = data.user_name;
+               this.account.email     = data.email;
+               this.account.photo     = data.photo;
+               console.log(data)
+            })
+            .catch(error => console.log(error))
+
+        },
+        
+        deleteOneUser(){
+            let supprConfirm = confirm('Vous êtes sur de supprimer votre compte')
+            if(supprConfirm == true){
+                fetch(`http://localhost:3000/api/auth/${ this.account.userId }`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'basic '+ localStorage.getItem('token'),
+                },
+            })
+            .then(res => res.json())
+            .then(() => {
+                this.$router.replace("/")
+                localStorage.clear()
+                alert( 'Cliquez ok pour supprimer' );
+            })
+            .catch(error => console.log(error))
+            }
+        }
+    },
 }
 </script>
-<style>
-body {
+<style scoped>
+.bgBody {
+    height: 100vh;
+    width: 100%;
+    padding-top: 5rem;
     background-color: #1b1b1b;
     color: #d8d8d8;
     font-family: 'Roboto';
 }
 .wrap_containerProfil {
+    width: 100%;
     border-radius: 20px;
     max-width: 400px;
-    margin-top: 5rem;
-    background: -webkit-linear-gradient(left, #2f1533, #6d1c42);
+    /* background: -webkit-linear-gradient(left, #2f1533, #6d1c42); */
+    background: -webkit-linear-gradient(right, #575757, #000000);
 }
 .iconImage{
-    color: #d8d8d8;
-    font-size: 3rem;
+    padding-top: 2rem;
     cursor: pointer;
-    padding: 10px 20px 0;
+}
+input[type="file"] {
+    display: none;
+}
+label[for="choose_file_profil"] {
+    display: flex;
+    justify-content: center;
+    font-size: 3rem;
+    padding-bottom: 1rem;
+    transform: scale(1);
+    transition: 0.2s;
+}
+
+.infUser{
+    position: relative;
+    margin-top: 3rem;
+    padding: 10px 10px ;
+    border-radius: 15px;
+    border: 0.5mm ridge #333333;
 }
 .form_container {
     display: flex;
     justify-content: center;
     padding: 20px;
     width: 100%;
+    
 }
 .form_items_input {
     width: 100%;
@@ -67,4 +203,36 @@ body {
 input::placeholder {
     color: #c0c0c0; 
 }
+.btn_compte {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 4rem 0;
+    transform: scale(1);
+    transition: 0.2s;
+}
+.btn_compte button {
+     width: 100%;
+    padding: 6px 0;
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(to right, #ff105f, #ffad06);
+}
+.btn_compte:hover {
+    transform: scale(1.1);
+}
+#btn_sumitProfil {
+    padding: 4px 12px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    transform: scale(1);
+    transition: 0.2s;
+    background: linear-gradient(to right, #8f0030, #7c7c7c);
+}
+
+#btn_sumitProfil:hover {
+    transform: scale(1.1);
+}
+
 </style>
