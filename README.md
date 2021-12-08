@@ -5,11 +5,11 @@ Septème projet du parcours développeur web chez OpenClassrooms, l'objectif con
 
 # Technologies utilisées
 
-  HTML
-  CSS
-  JavaScript
-  Vue.js
-  MySQL
-  SQL
-  Node.js
-  Express.js
+HTML
+CSS
+Bootstrap
+VueJS
+NodeJS
+ExpressJs
+MySql
+Sql
