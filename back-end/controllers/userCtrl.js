@@ -44,7 +44,8 @@ exports.login = (req,res) => {
             res.status(200).json({ 
                 userId: user.id,
                 token: jwt.sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '24h'}),
-                // userName: user.user_name,
+                userName: user.user_name,
+                photo: user.photo
             })
         })
        .catch(error => res.status(500).json({ error }));
@@ -95,25 +96,29 @@ exports.getOne = (req, res) => {
 };
 
 exports.updateObj = (req, res) => {
-
-    const imgUrl = "";
+    let imgUrl = "";
+    console.log(req.body)
     if(req.file){
         imgUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
     }
-    const user = new User({
-        user_name: req.body.user_name,
-        email:     req.body.email,
-        password:  req.body.password,
-        photo:     imgUrl 
-    });
-    user.updateOne(req.params.id, (error => {
+    User.findOne(req.params.id, async (error, u) => {
         if(error){
-            res.status(400).json({ error })
+            res.status(500).json({message: "utilisateur introuvable"})
         }else{
-            res.status(200).json({ message: 'Objet modifié'})
+            // if(req.body.user_name != "") u[0].user_name = req.body.user_name;
+            // if(req.body.email != "") u[0].email = req.body.email;
+            if(req.body.password != "") u[0].password = await bcrypt.hash(req.body.password, saltRound).catch(e => {console.log(e)}); 
+            if(imgUrl != "") u[0].photo = imgUrl;
+            const user = new User(u[0])
+            user.updateOne(req.params.id, (error => {
+                if(error){
+                    res.status(400).json({ error })
+                }else{
+                    res.status(200).json({ message: 'Objet modifié'})
+                }
+            }))
         }
-    }))
-   
+    })
 };
 
 exports.deleteObj = (req, res) => {

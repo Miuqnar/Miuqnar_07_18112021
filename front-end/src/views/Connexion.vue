@@ -29,6 +29,7 @@
                                 <button type="submit" class="btn_submit">Se connecter</button>
                             </div>
                         </form>
+                        
                         <form @submit.prevent="createAccount()" method="POST" v-if="!isLoginAndSignup.isLogin">
                             <div class="text-center">
                                 <h3 class="fs-5 p-3">Créer un compte</h3>
@@ -90,37 +91,37 @@ export default {
         },
         createAccount() {
             if(this.signup.password !=this.signup.confirmPassword){
-                console.log('Le mot de passe doit être identique');
+                alert('Le mot de passe doit être identique');
                 return false
             }
             if (this.signup.user_name == "") {
-                console.log("Veuillez entrer votre nom");
+                alert("Veuillez entrer votre nom");
                 return true
             }else {
                 //eslint-disable-next-line
                 let user_nameRegex = new RegExp('^[a-zA-Z \s]+$', 'g')
                 if (user_nameRegex.test(this.signup.user_name) === false) {
-                console.log("Le nom complet doit comporter que des lettres uniquement");
+                alert("Le nom complet doit comporter que des lettres uniquement");
                     return true
                 }
             }
             if (this.signup.email == "") {
-                console.log("Veuillez entrer votre email");
+                alert("Veuillez entrer votre email");
                 return true
             }else {
                 let emailRegex = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$', 'g')
                 if (emailRegex.test(this.signup.email) === false) {
-                console.log("Veuillez entrer un email valide");
+                alert("Veuillez entrer un email valide");
                     return true
                 }
             }
             if (this.signup.password == "") {
-                console.log("Veuillez entrer votre mot de passe");
+                alert("Veuillez entrer votre mot de passe");
                 return true
             }else {
                 let passwordRegex = new RegExp('^[a-zA-Z 0-9]+$', 'g')
                 if (passwordRegex.test(this.signup.password) === false) {
-                console.log("Veuillez entrer un mot de passe valide");
+                alert("Veuillez entrer un mot de passe valide");
                     return true
                 }
             }
@@ -139,37 +140,12 @@ export default {
                 }
             })
             .then(res => {
-                localStorage.setItem("userId", res.userId);
-                localStorage.setItem("token", res.token);
-                localStorage.setItem("userName", res.user_name);
                 alert('Bienvenue sur Groupomania, Connectez-vous dès maintenant')
-                
-                //// login ////
-                fetch("http://localhost:3000/api/auth/login", {
-                    method: 'POST',
-                    headers: {
-                        'content-type': 'application/json', 
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify(this.signup)
-                })
-                .then(res => res.json())
-                .then(res => {
-                    console.log(res)
-                    if(res.userId && res.token) {
-                        localStorage.setItem("userId", res.userId);
-                        localStorage.setItem("token", res.token);
-                        localStorage.setItem("userName", res.userName);
-                        console.log(localStorage);
-                        // window.location.href = "/#/accueil";
-                        this.$router.replace("/accueil")
-                    }else {
-                        alert("mot de passe ou user incorrect");
-                        this.login = ""
-                    }
-                })
-                // this.$router.reload("/accueil")
-                // window.location.reload()
+                this.login.email = this.signup.email
+                this.login.password = this.signup.password
+                this.$router.replace("/accueil")
+                this.loginAccount();
+                console.log(res)
             })
         },
         
@@ -189,6 +165,7 @@ export default {
                     localStorage.setItem("userId", res.userId);
                     localStorage.setItem("token", res.token);
                     localStorage.setItem("userName", res.userName);
+                    localStorage.setItem("photo", res.photo);
                     console.log(localStorage);
                     // window.location.href = "/#/accueil";
                     this.$router.replace("/accueil")

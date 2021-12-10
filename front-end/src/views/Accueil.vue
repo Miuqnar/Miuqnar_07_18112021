@@ -28,10 +28,12 @@
 
             <!--------------------------------------------------- message publiéé -------------------------------------------->
 
-            <div class="px-2 bg_container mt-3" v-for="article in articles" :key="'article-' + article.id"> 
+            <div class="px-2 bg_container mt-3" v-for="article in articles" :key="article"> 
                 <div class="row">
                     <div class="pt-3 icon_photo">
-                        <i class="far fa-user-circle"></i>
+                        <!-- <i class="far fa-user-circle"></i> -->
+                        <i v-if="!article.photo" class="far fa-user-circle"></i>
+                        <img v-if="article.photo" class="img_user_circle " :src="article.photo" />
                         <span class="fs-5 userName text-warning">
                             {{ article.user ?  article.user.user_name : "" }}
                         </span>
@@ -64,13 +66,13 @@
                         </div>
                         
                         <div class="bgComment">
-                            <div v-for="commentArticle in article.comments" :key="commentArticle">
-                                <span class="text-warning userComment">
-                                    {{ commentArticle.user ? commentArticle.user.user_name: "" }}
+                            <div v-for="comment in article.comments" :key="comment">
+                                <span class="text-warning">
+                                    {{  comment.user_name }}
                                 </span>
                                 <p class="publicationComment px-3">
                                     <!-- <span class="text-warning">{{ commentArticle.user ? commentArticle.user.user_name: "" }}</span> -->
-                                    {{ commentArticle.newComment }}
+                                    {{ comment.newComment }}
                                 </p>
                             </div>
                         </div>
@@ -130,7 +132,7 @@ export default {
         
         ////////////////////////////////////// POST A MESSAGE ///////////////////////////////////////
         postArticles() {
-
+            
             const formData = new FormData()
             formData.append('message', this.sendComment.message)
             formData.append('image', this.sendComment.image)
@@ -150,6 +152,7 @@ export default {
                 this.sendComment.message = "",
                 this.sendComment.image = "";
                 this.getArticles();
+                this.$router.push('/')
             })
             .catch(error => console.log(error))
         },
@@ -203,10 +206,11 @@ export default {
                 },
             })
             .then(res => res.json())
-            .then(() => {
+            .then((data) => {
                 this.getArticles();
+                console.log(data)
             })
-            .catch(error => console.log(error))
+            // .catch(error => console.log(error))
         },
         
         ///////////////////////////////////  LIKE ///////////////////////////////////////////
@@ -311,6 +315,12 @@ body {
     color: #b4b4b4;
     font-size: 13px;
 }
+.img_user_circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    object-fit: cover;
+}
 input[type="file"] {
     display: none;
 }
@@ -368,7 +378,7 @@ label[for="choose_file"]:hover {
 .publicationComment {
     font-size: 14px;
     padding: 7px 0;
-    margin-left: 50px;
+    /* margin-left: 50px; */
     background: #2b2b2b;
     max-width: 310px;
     border-radius: 25px;

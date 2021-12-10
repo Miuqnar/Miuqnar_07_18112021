@@ -15,15 +15,15 @@ exports.getAllObj = (req, res) => {
                 let like = [];
                 let dislike = [];
                 commentArticle = await Commentaire.findBy({ article_id: data[i].id}).catch(e => {console.log(e)})
-                for(c of commentArticle){
-                    await User.findOne(c.user_id, (error, user) => {
-                        if(error){
-                            c.user = {}
-                        }else{
-                            c.user = user[0]
-                        }
-                    })
-                }
+                // for await (c of commentArticle){
+                //     await User.findOne(c.user_id, (error, user) => {
+                //         if(error){
+                //             c.user = {}
+                //         }else{
+                //             c.user = user[0]
+                //         }
+                //     })
+                // }
                 like = await LikeAndDislike.findBy(data[i].id, { likes: 1}).catch(e => {console.log(e)})
                 dislike = await LikeAndDislike.findBy(data[i].id, { dislikes: 1}).catch(e => {console.log(e)})
 
@@ -107,6 +107,7 @@ exports.deteleObjt = (req, res) => {
         if(error){
             res.status(400).json({ error })
         }else{
+            
             res.status(200).json({ message: "Objet supprimé"})
         }
     })

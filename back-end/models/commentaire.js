@@ -48,7 +48,7 @@ class Commentaire {
         })
     }
     static findBy(where){
-        const sql = "SELECT * FROM Commentaire WHERE  ?";
+        const sql = "SELECT * FROM Commentaire, utilisateur WHERE Commentaire.user_id = utilisateur.id AND ?";
         return  new Promise((resolve, reject) => {
             connection.query(sql, [where], function(error, data){
                 if(error){

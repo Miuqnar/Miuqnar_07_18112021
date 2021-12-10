@@ -31,8 +31,6 @@ exports.createObj = (req, res) => {
     }else if(!req.body.article_id){
         res.status(400).json({ error: "ID d'article obligatoire"});
     }
-    
-    
 };
 
 exports.getOneObj = (req, res) => {

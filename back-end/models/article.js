@@ -12,7 +12,9 @@ class Article {
         }
     }
     static findAll(articles){
-        const sql = "SELECT * FROM article ORDER BY id DESC";
+        const sql = "SELECT * FROM article, utilisateur WHERE article.user_id = utilisateur.id ORDER BY article.id DESC";
+        // SELECT * FROM article JOIN utilisateur ON article.user_id = utilisateur.id ORDER BY article.id DESC
+        // SELECT * FROM article, utilisateur WHERE utilisateur.id = article.user_id ORDER BY article.id DESC
         connection.query(sql, (error, res) => {
             if(error){
                 articles(error, null);
@@ -22,6 +24,7 @@ class Article {
             }
         });
     };
+    
     save(){
         const sql = "INSERT INTO article (message, image, user_id) VALUES (?, ?, ?)";
         return  new Promise((resolve, reject) => {
@@ -51,12 +54,10 @@ class Article {
         })
     }
     static deleteOne(id, callback){
-        const sql = "DELETE FROM article WHERE id = ?";
+        const sql = "DELETE FROM article WHERE id = ?"
         connection.query(sql, [id], callback, (error) => {
             if(error) throw error
         })
     }
 };
-
-
 module.exports = Article; 

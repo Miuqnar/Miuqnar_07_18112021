@@ -2,16 +2,20 @@
   <div>
       <Menu/>
         <div class="bgBody">
-            <div class="mx-2">
+            <div v-if="account" class="mx-2">
                 <div class="container wrap_containerProfil">
                     <div>
                         <div class="iconImage">
                             <div class="">
-                                <label for="choose_file_profil"><i class="far fa-user-circle " :src="account.photo"></i></label>
+                                <label for="choose_file_profil">
+                                    <i v-if="!account.photo" class="far fa-user-circle"></i>
+                                    <img v-if="account.photo" class="img_user_circle " :src="account.photo" />
+                                </label>
                                 <input @change="selectFile( $event )" type="file" ref="file" id="choose_file_profil">
                             </div>
                             <div class=" d-flex justify-content-center">
                                 <!-- <button type="submit" id="btn_sumitProfil">{{ publish }}</button> -->
+                                <span>Cliquez sur l'icon pour modifier l'image</span>
                             </div>
                         </div>
                         <div class="px-4 pt-4  infUser">
@@ -52,13 +56,8 @@ export default {
     data() {
         return {
             publish: 'Modifier la photo',
-             account: {
-                user_name: "",
-                email: "",
-                password: "",
-                photo: "",
-                userId: localStorage.getItem("userId"),
-            },
+            account: null,
+            userId: localStorage.getItem("userId"),
             accountButton: {
                 enregistrer: "Enregistrer",
                 desativer: "Desativer le compte",
@@ -75,14 +74,14 @@ export default {
         
         modifyProfil(){
             const formData = new FormData()
-            // formData.append('password', this.account.password)
-            formData.append('photo', this.account.photo)
+            formData.append('password', this.account.password);
+            formData.append('image', this.account.photo);
 
-            // console.log('test password', formData.get("password"))
+            console.log('test password', formData.get("password"))
             console.log('test photo', formData.get("photo"))
 
-            fetch(`http://localhost:3000/api/auth/`, { //${ this.account.userId}
-                method: 'POST',
+            fetch(`http://localhost:3000/api/auth/${ this.userId }`, { 
+                method: 'PUT',
                 headers: {
                     'Authorization': 'basic '+ localStorage.getItem('token'),
                     'Accept': 'application/json',
@@ -90,15 +89,15 @@ export default {
                 body: formData 
             })
             .then(res => res.json())
-            // .then(data => {
-            //    this.account.password = data.password;
-            // console.log(data)
-            // })
+            .then(data => {
+                this.getUser()
+                console.log(data)
+            })
             .catch(error => console.log(error))
         },
 
         getUser(){
-            fetch(`http://localhost:3000/api/auth/${ this.account.userId}`, {
+            fetch(`http://localhost:3000/api/auth/${ this.userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'basic '+ localStorage.getItem('token'),
@@ -106,10 +105,9 @@ export default {
             })
             .then(res => res.json())
             .then(data => {
-               this.account.user_name = data.user_name;
-               this.account.email     = data.email;
-               this.account.photo     = data.photo;
-               console.log(data)
+                data.password = "";
+                this.account = data
+                console.log(data)
             })
             .catch(error => console.log(error))
 
@@ -118,7 +116,7 @@ export default {
         deleteOneUser(){
             let supprConfirm = confirm('Vous êtes sur de supprimer votre compte')
             if(supprConfirm == true){
-                fetch(`http://localhost:3000/api/auth/${ this.account.userId }`, {
+                fetch(`http://localhost:3000/api/auth/${ this.userId }`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': 'basic '+ localStorage.getItem('token'),
@@ -155,6 +153,12 @@ export default {
 .iconImage{
     padding-top: 2rem;
     cursor: pointer;
+}
+.img_user_circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    object-fit: cover;
 }
 input[type="file"] {
     display: none;

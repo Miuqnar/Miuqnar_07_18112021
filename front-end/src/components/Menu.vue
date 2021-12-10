@@ -3,11 +3,13 @@
         <div class="container">
             <div class="row row-cols-2">
                 <div class=" logo">
-                    <img class="col-6" src="../assets/logo/groupomania02.png" alt="groupomania social NetWork">
+                    <img class="col-6" src="../assets/logo/groupomania03.png" alt="groupomania social NetWork">
                 </div>
                 <div class="col-6 d-flex justify-content-end">
                     <div class="imgIcon" @click="menuToggle()">
-                    <i class="far fa-user-circle"></i>
+                        <!-- <i class="far fa-user-circle"></i> -->
+                        <i v-if="!photo" class="far fa-user-circle"></i>
+                        <img v-if="photo" class="img_user_circle " :src="photo" />
                     </div>
                     <div class="profil" @mouseleave="menuToggle()">
                         <ul>
@@ -34,6 +36,7 @@ export default {
     data() {
         return {
             menuDisplay: true,
+            photo: localStorage.getItem('photo')
         }
     },
     methods: {

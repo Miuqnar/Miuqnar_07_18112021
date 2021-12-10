@@ -26,7 +26,7 @@ class User {
         const sql = "SELECT * FROM utilisateur WHERE id = ?";
         connection.query(sql, [id], callback);
     }
-    updateOne(userId){
+    updateOne(userId, callback){
         const sql = "UPDATE utilisateur SET user_name = ?, email = ?, password = ?, photo = ? WHERE id = ?";
         connection.query(sql, [this.user_name, this.email, this.password, this.photo, userId], callback);
     }
