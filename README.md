@@ -13,3 +13,16 @@ Septème projet du parcours développeur web chez OpenClassrooms, l'objectif con
 - ExpressJs
 - MySql
 - Sql
+
+
+# Frontend
+
+- cd front-end
+- npm install 
+- npm run serve
+
+# Backend
+
+- cd back-end
+- npm install
+- nodemon server
