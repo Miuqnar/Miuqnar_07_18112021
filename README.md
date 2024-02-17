@@ -12,7 +12,6 @@ L'objectif consiste à construire un réseau social interne pour les employés d
 - NodeJS
 - ExpressJs
 - MySql
-- Sql
 
 
 # Frontend
